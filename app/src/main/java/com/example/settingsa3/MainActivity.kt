@@ -27,16 +27,19 @@ import androidx.compose.runtime.setValue
 import androidx.compose.runtime.getValue
 import androidx.compose.material3.Slider
 import androidx.compose.material3.Switch
-import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Checkbox
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.draw.scale
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -49,39 +52,45 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         setContent {
             SettingsA3Theme {
-                // set up the snackbar
-                val scope = rememberCoroutineScope()
-                val snackbarHostState = remember { SnackbarHostState() }
-                Scaffold(
-                    modifier = Modifier.fillMaxSize(),
-                    snackbarHost = {
-                        SnackbarHost(hostState = snackbarHostState)
-                    }
-                ) { innerPadding ->
-                    Column(
-                        horizontalAlignment = Alignment.CenterHorizontally
-                    ) {
-                        // main settings interface
-                        Settings(
-                            modifier = Modifier.padding(innerPadding)
+                SettingApply()
+            }
+        }
+    }
+}
+
+// to be used in preview. my emulator stopped working
+@Composable
+fun SettingApply() {
+    // set up the snackbar
+    val scope = rememberCoroutineScope()
+    val snackbarHostState = remember { SnackbarHostState() }
+    Scaffold(
+        modifier = Modifier.fillMaxSize(),
+        snackbarHost = {
+            SnackbarHost(hostState = snackbarHostState)
+        }
+    ) { innerPadding ->
+        Column(
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            // main settings interface
+            Settings(
+                modifier = Modifier.padding(innerPadding)
+            )
+            // apply button that shows a snackbar confirmation message
+            IconButton(
+                onClick = {
+                    scope.launch {
+                        snackbarHostState.showSnackbar(
+                            message = "Settings applied!"
                         )
-                        // apply button that shows a snackbar confirmation message
-                        FloatingActionButton(
-                            onClick = {
-                                scope.launch {
-                                    snackbarHostState.showSnackbar(
-                                        message = "Settings applied!"
-                                    )
-                                }
-                            }
-                        ) {
-                            Text(
-                                text = "Apply Settings",
-                                modifier = Modifier.padding(horizontal = 16.dp)
-                            )
-                        }
                     }
                 }
+            ) {
+                Icon(
+                    painter = painterResource(R.drawable.check),
+                    contentDescription = "apply icon",
+                )
             }
         }
     }
@@ -232,7 +241,7 @@ fun RadioButtonsRow(
     onClick: (String) -> Unit)
 {
     Column(
-        verticalArrangement = Arrangement.spacedBy(8.dp)
+        verticalArrangement = Arrangement.spacedBy(16.dp)
     ) {
         Label(
             label = label,
@@ -240,7 +249,7 @@ fun RadioButtonsRow(
         )
         Column(
             modifier = Modifier.selectableGroup(),
-            verticalArrangement = Arrangement.spacedBy(8.dp)
+            verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
             options.forEach { option -> // for each option in languages, create a radio button row
                 Row(
@@ -303,6 +312,6 @@ fun CheckboxRow(
 @Composable
 fun SettingsPreview() {
     SettingsA3Theme {
-        Settings()
+        SettingApply()
     }
 }
